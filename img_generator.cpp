@@ -5,7 +5,8 @@
 #include <string>
 #include <iostream>
 #include <sys/time.h>
-#include <thread>
+#include <future>
+
 using namespace cv;
 
 float colour_counter(Mat);
@@ -17,9 +18,22 @@ int main(int argc, char * argv[] )
 	src = imread("hqdefault.jpg",CV_LOAD_IMAGE_COLOR);
 	int limit = atoi(argv[1]);
 	int size = atoi(argv[2]);
+	Mat src1(src, Rect( Point(0, 0), Point(src.cols/2, src.rows) ));
+	Mat src2(src, Rect( Point(src.cols/2 + 1, 0), Point(src.cols, src.rows) ));
+	
+	
 	auto start = getTickCount();
 	
-	Mat output = generate(src, limit, size);
+	std::future<Mat> img1_future(std::async(generate, src1, limit/2, size));
+	std::future<Mat> img2_future(std::async(generate, src2, limit/2, size));
+	
+	Mat img1(img1_future.get());
+	Mat img2(img2_future.get());
+	
+	imwrite("left.jpg", img1);
+	imwrite("right.jpg", img2);
+	Mat output;
+	hconcat(img1,img2,output);
 	
 	auto end = getTickCount();
 	std::cout << (end-start)/getTickFrequency() << std::endl;		
