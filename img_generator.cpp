@@ -21,15 +21,13 @@ int main(int argc, char * argv[] )
 	int limit = atoi(argv[1]);
 	int size = atoi(argv[2]);
 	int threads = atoi(argv[3]);
-	Mat src1(src, Rect( Point(0, 0), Point(src.cols/2, src.rows) ));
-	Mat src2(src, Rect( Point(src.cols/2 + 1, 0), Point(src.cols, src.rows) ));
 	
 	
 	auto start = getTickCount();
 	std::vector<std::future<void>> futures;
 	for(int i = 0 ; i < threads; i++)
 	{
-			futures.push_back( std::async(std::launch::async, generate, src, output, limit/threads, size, i*src.cols/threads, (i+1)*src.cols/threads, (i==0)));
+			futures.push_back( std::async(std::launch::async, generate, src, output, limit/threads, size, i*src.cols/threads, (i+1)*src.cols/threads, threads==1));
 	}
 	for( auto &f : futures )
 		f.get();
@@ -89,7 +87,7 @@ void generate(Mat src, Mat dst, int limit, int size, int range_begin, int range_
 		}
 		
 		else
-		{
+		{	
 			circle(img2, point, size, colour_scalar, -1);
 			circle(dst, point, size, colour_scalar, -1);
 		}			
