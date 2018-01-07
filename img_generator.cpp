@@ -13,23 +13,24 @@ using namespace cv;
 int main(int argc, char * argv[] )
 {
 	Mat src;
-	
-	src = imread("hqdefault.jpg",CV_LOAD_IMAGE_COLOR);
+	std::string file_name(argv[4]);
+	src = imread(file_name,CV_LOAD_IMAGE_COLOR);
 	Mat output(src.rows, src.cols, CV_8UC3, Scalar(255,255,255));
 	int limit = atoi(argv[1]);
 	int size = atoi(argv[2]);
 	int threads = atoi(argv[3]);
-	
+
 	
 	auto start = getTickCount();
 	std::vector<std::future<void>> futures;
 	for(int i = 0 ; i < threads; i++)
 	{
-			futures.push_back( std::async(std::launch::async, generate, src, output, limit/threads, size, i*src.cols/threads, (i+1)*src.cols/threads, threads==1));
+		futures.push_back( std::async(std::launch::async, generate, src, output, limit/threads, size, i*src.cols/threads, (i+1)*src.cols/threads, threads==1));
 	}
+	
 	for( auto &f : futures )
 		f.get();
-	imwrite("output.jpg", output); 
+	imwrite(std::string("o-") + file_name, output); 
 	
 	auto end = getTickCount();
 	std::cout << (end-start)/getTickFrequency() << std::endl;		
