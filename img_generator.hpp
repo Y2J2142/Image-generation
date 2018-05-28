@@ -25,6 +25,8 @@ void generate(Mat src, Mat dst, int limit, int size, int range_begin, int range_
 		Vec3b colour = src.at<Vec3b>(point);
 		Scalar colour_scalar(colour[0], colour[1], colour[2]);
 		
+		circle(img1, point, size, colour_scalar, -1);
+
 		Point pnt1((point.x - size) > 0 ? point.x - size : 0, (point.y - size) > 0 ? point.y - size : 0);
 		Point pnt2(min(src.cols, point.x + size), min(src.rows, point.y + size));
 				
@@ -44,8 +46,8 @@ void generate(Mat src, Mat dst, int limit, int size, int range_begin, int range_
 		}
 		else
 		{
-				circle(img2, point, size, colour_scalar, -1);
-				circle(dst, point, size, colour_scalar, -1);
+			circle(img2, point, size, colour_scalar, -1);
+			circle(dst, point, size, colour_scalar, -1);
 		}
 		if(i%(limit/10000) == 0 && saver)
 		{
